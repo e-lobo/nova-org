@@ -1,0 +1,6 @@
+{
+    "version": 2,
+    "projects": {
+      "kyc-website": "apps/kyc-website"
+    }
+  }

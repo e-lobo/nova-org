@@ -1,0 +1,55 @@
+{
+  "app": {
+    "title": "KYC Portal",
+    "toggleTheme": "Toggle theme",
+    "welcome": "Welcome to KYC Portal",
+    "signInPrompt": "Please sign in to start your KYC verification process."
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "signUp": "Create account",
+    "email": "Email address",
+    "password": "Password",
+    "createAccount": "Create a new account",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?"
+  },
+  "kyc": {
+    "title": "KYC Verification",
+    "subtitle": "Please complete all steps to verify your identity",
+    "steps": {
+      "personalInfo": "Personal Information",
+      "documents": "Document Upload",
+      "review": "Review"
+    },
+    "personalInfo": {
+      "fullName": "Full Name",
+      "dateOfBirth": "Date of Birth",
+      "address": "Current Address",
+      "phone": "Phone Number",
+      "email": "Email"
+    },
+    "documents": {
+      "idDocument": "ID Document",
+      "proofOfAddress": "Proof of Address",
+      "selfie": "Selfie with ID",
+      "instructions": {
+        "id": "Please upload a clear photo of your passport or driver's license",
+        "address": "Upload a recent utility bill or bank statement (not older than 3 months)",
+        "selfie": "Take a clear photo of yourself holding your ID document"
+      }
+    },
+    "review": {
+      "title": "Review Your Information",
+      "personalInfo": "Personal Information",
+      "uploadedDocs": "Uploaded Documents"
+    },
+    "actions": {
+      "next": "Next",
+      "back": "Back",
+      "submit": "Submit KYC",
+      "submitting": "Submitting..."
+    }
+  }
+}
