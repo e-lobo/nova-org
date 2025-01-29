@@ -1,0 +1,85 @@
+{
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "success": "تم بنجاح",
+    "submit": "إرسال",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "view": "عرض",
+    "close": "إغلاق",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "search": "بحث",
+    "filter": "تصفية",
+    "all": "الكل",
+    "none": "لا شيء",
+    "yes": "نعم",
+    "no": "لا"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "rememberMe": "تذكرني",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "loginError": "خطأ في تسجيل الدخول",
+    "invalidCredentials": "بيانات الاعتماد غير صالحة"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "stats": {
+      "pendingReviews": "المراجعات المعلقة",
+      "todaySubmissions": "طلبات اليوم",
+      "weeklyApprovalRate": "معدل الموافقة الأسبوعي",
+      "avgProcessingTime": "متوسط وقت المعالجة"
+    },
+    "charts": {
+      "weeklySubmissions": "الطلبات الأسبوعية",
+      "statusDistribution": "توزيع الحالة"
+    },
+    "table": {
+      "id": "المعرف",
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "document": "المستند",
+      "status": "الحالة",
+      "submitted": "تاريخ التقديم",
+      "actions": "الإجراءات",
+      "review": "مراجعة"
+    },
+    "status": {
+      "pending": "معلق",
+      "approved": "تمت الموافقة",
+      "rejected": "مرفوض"
+    }
+  },
+  "review": {
+    "title": "مراجعة طلب KYC",
+    "documents": "المستندات",
+    "personalInfo": "المعلومات الشخصية",
+    "actions": {
+      "approve": "موافقة",
+      "reject": "رفض",
+      "return": "إرجاع للتعديل",
+      "download": "تحميل"
+    },
+    "note": "ملاحظة المراجعة",
+    "notePlaceholder": "أضف ملاحظات المراجعة هنا..."
+  },
+  "settings": {
+    "theme": {
+      "light": "فاتح",
+      "dark": "داكن",
+      "system": "النظام"
+    },
+    "language": {
+      "en": "English",
+      "ar": "العربية"
+    }
+  }
+}

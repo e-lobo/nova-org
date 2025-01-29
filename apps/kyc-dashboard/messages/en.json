@@ -1,0 +1,85 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "loginError": "Login Error",
+    "invalidCredentials": "Invalid email or password"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "stats": {
+      "pendingReviews": "Pending Reviews",
+      "todaySubmissions": "Today's Submissions",
+      "weeklyApprovalRate": "Weekly Approval Rate",
+      "avgProcessingTime": "Avg. Processing Time"
+    },
+    "charts": {
+      "weeklySubmissions": "Weekly Submissions",
+      "statusDistribution": "Status Distribution"
+    },
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "email": "Email",
+      "document": "Document",
+      "status": "Status",
+      "submitted": "Submitted",
+      "actions": "Actions",
+      "review": "Review"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    }
+  },
+  "review": {
+    "title": "Review KYC Submission",
+    "documents": "Documents",
+    "personalInfo": "Personal Information",
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "return": "Return for Modification",
+      "download": "Download"
+    },
+    "note": "Review Note",
+    "notePlaceholder": "Add your review notes here..."
+  },
+  "settings": {
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "language": {
+      "en": "English",
+      "ar": "العربية"
+    }
+  }
+}

@@ -1,25 +1,25 @@
 {
-  "name": "kyc-website",
+  "name": "kyc-dashboard",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "sourceRoot": "apps/kyc-website",
+  "sourceRoot": "apps/kyc-dashboard",
   "targets": {
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cd apps/kyc-website && npm run dev",
+        "command": "cd apps/kyc-dashboard && npm run dev",
         "cwd": "."
       }
     },
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cd apps/kyc-website && npm run build",
+        "command": "cd apps/kyc-dashboard && npm run build",
         "cwd": "."
       },
       "outputs": [
-        "{workspaceRoot}/apps/kyc-website/.nuxt",
-        "{workspaceRoot}/apps/kyc-website/.output"
+        "{workspaceRoot}/apps/kyc-dashboard/.next",
+        "{workspaceRoot}/apps/kyc-dashboard/.next/!(cache)"
       ]
     }
   }
