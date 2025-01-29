@@ -1,0 +1,23 @@
+{
+  "name": "kyc-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/kyc-api",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/kyc-api && npm run dev",
+        "cwd": "."
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/kyc-api && npm run build",
+        "cwd": "."
+      },
+      "outputs": ["{workspaceRoot}/apps/kyc-api/dist"]
+    }
+  }
+}
