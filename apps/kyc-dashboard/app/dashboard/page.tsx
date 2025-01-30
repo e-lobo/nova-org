@@ -55,6 +55,9 @@ import {
 
 import { useKYCSubmissions } from "@/hooks/use-kyc";
 import { KYCSubmission } from "@/types/kyc";
+import { config } from "@/config/env";
+import { api } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 const COLORS = ["#ff9800", "#4caf50", "#f44336"];
 
@@ -73,14 +76,35 @@ function ReviewDialog({
 }: ReviewDialogProps) {
   const [note, setNote] = useState("");
   const [selectedTab, setSelectedTab] = useState("documents");
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
   if (!submission) return null;
 
-  const documents = [
-    { name: "Passport Scan", type: "PDF", size: "2.4 MB", url: "#" },
-    { name: "Proof of Address", type: "PDF", size: "1.1 MB", url: "#" },
-    { name: "Selfie with ID", type: "JPG", size: "800 KB", url: "#" },
-  ];
+  const documents = submission.documents.map((doc) => ({
+    id: doc.id,
+    name: getDocumentTypeName(doc.documentType),
+    type: doc.mimeType.split("/")[1].toUpperCase(),
+    size: formatFileSize(doc.size),
+    originalName: doc.originalName,
+  }));
+
+  function getDocumentTypeName(type: string) {
+    const names: Record<string, string> = {
+      PASSPORT: "Passport",
+      ADDRESS_PROOF: "Proof of Address",
+      SELFIE: "Selfie with ID",
+    };
+    return names[type] || type;
+  }
+
+  function formatFileSize(bytes: number) {
+    if (bytes < 1024) return bytes + " B";
+    const kb = bytes / 1024;
+    if (kb < 1024) return kb.toFixed(1) + " KB";
+    const mb = kb / 1024;
+    return mb.toFixed(1) + " MB";
+  }
 
   const personalInfo = {
     fullName: submission.fullName,
@@ -88,6 +112,25 @@ function ReviewDialog({
     nationality: submission.nationality,
     address: submission.address,
     phone: submission.phoneNumber,
+  };
+
+  const handleDownload = async (fileId: string, fileName: string) => {
+    try {
+      const token = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("auth_token="))
+        ?.split("=")[1];
+
+      if (!token) throw new Error("No authentication token");
+
+      await api.downloadFile(token, fileId, fileName);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Download failed",
+        description: "Failed to download the file. Please try again.",
+      });
+    }
   };
 
   return (
@@ -115,7 +158,7 @@ function ReviewDialog({
             <div className="space-y-4">
               {documents.map((doc) => (
                 <div
-                  key={doc.name}
+                  key={doc.id}
                   className="flex items-center justify-between p-4 border rounded-lg"
                 >
                   <div className="flex items-center gap-3">
@@ -127,7 +170,12 @@ function ReviewDialog({
                       </p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                    onClick={() => handleDownload(doc.id, doc.originalName)}
+                  >
                     <Download className="h-4 w-4" />
                     Download
                   </Button>
@@ -152,31 +200,45 @@ function ReviewDialog({
             </div>
           </TabsContent>
         </Tabs>
-
-        <div className="mt-4">
-          <Label htmlFor="note">Review Note</Label>
-          <Textarea
-            id="note"
-            placeholder="Add your review notes here..."
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            className="mt-2"
-          />
-        </div>
+        {submission.status === "PENDING" && (
+          <div className="mt-4">
+            <Label htmlFor="note">Review Note</Label>
+            <Textarea
+              id="note"
+              placeholder="Add your review notes here..."
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              className="mt-2"
+            />
+          </div>
+        )}
 
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button
-            variant="destructive"
-            onClick={() => onAction("reject", note)}
-          >
-            Reject
-          </Button>
-          <Button variant="outline" onClick={() => onAction("return", note)}>
-            Return for Modification
-          </Button>
-          <Button variant="default" onClick={() => onAction("approve", note)}>
-            Approve
-          </Button>
+          {submission.status === "PENDING" && (
+            <>
+              <Button
+                variant="destructive"
+                onClick={() => onAction("reject", note)}
+                disabled={loading}
+              >
+                {loading ? "Processing..." : "Reject"}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => onAction("return", note)}
+                disabled={loading}
+              >
+                {loading ? "Processing..." : "Return for Modification"}
+              </Button>
+              <Button
+                variant="default"
+                onClick={() => onAction("approve", note)}
+                disabled={loading}
+              >
+                {loading ? "Processing..." : "Approve"}
+              </Button>
+            </>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -188,8 +250,16 @@ export default function DashboardPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedSubmission, setSelectedSubmission] =
     useState<KYCSubmission | null>(null);
+  const { toast } = useToast();
 
-  const { submissions, loading, error, stats, chartData } = useKYCSubmissions();
+  const {
+    submissions,
+    loading,
+    error,
+    stats,
+    chartData,
+    refetch: fetchSubmissions,
+  } = useKYCSubmissions();
 
   // Filter submissions
   const filteredSubmissions = submissions
@@ -218,15 +288,50 @@ export default function DashboardPage() {
     }
   };
 
-  const handleReviewAction = (
+  const handleReviewAction = async (
     action: "approve" | "reject" | "return",
     note?: string
   ) => {
     if (!selectedSubmission) return;
 
-    // In a real app, this would make an API call
-    console.log(`${action} submission ${selectedSubmission.id}`, { note });
-    setSelectedSubmission(null);
+    try {
+      const token = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("auth_token="))
+        ?.split("=")[1];
+
+      if (!token) throw new Error("No authentication token found");
+
+      const status =
+        action === "return"
+          ? "RETURNED"
+          : action === "approve"
+          ? "APPROVED"
+          : "REJECTED";
+
+      await api.updateKYCStatus(
+        token,
+        selectedSubmission.id,
+        status as any,
+        note
+      );
+
+      toast({
+        title: "Success",
+        description: `KYC submission has been ${action}ed successfully.`,
+      });
+
+      // Refetch submissions
+      fetchSubmissions();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Action failed",
+        description: "Failed to update KYC status. Please try again.",
+      });
+    } finally {
+      setSelectedSubmission(null);
+    }
   };
 
   return (
@@ -358,9 +463,10 @@ export default function DashboardPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="approved">Approved</SelectItem>
-                <SelectItem value="rejected">Rejected</SelectItem>
+                <SelectItem value="PENDING">Pending</SelectItem>
+                <SelectItem value="APPROVED">Approved</SelectItem>
+                <SelectItem value="RETURNED">Rejected</SelectItem>
+                <SelectItem value="REJECTED">Rejected</SelectItem>
               </SelectContent>
             </Select>
           </div>

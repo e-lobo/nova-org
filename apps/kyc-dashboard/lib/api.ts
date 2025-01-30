@@ -78,7 +78,7 @@ export const api = {
   updateKYCStatus: async (
     token: string,
     kycId: string,
-    status: "APPROVED" | "REJECTED",
+    status: "APPROVED" | "REJECTED" | "RETURNED",
     notes?: string
   ) => {
     const response = await fetch(`${config.apiUrl}/kyc/${kycId}/status`, {
@@ -95,5 +95,54 @@ export const api = {
     }
 
     return response.json();
+  },
+  updateKYCStatus: async (
+    token: string,
+    kycId: string,
+    status: "APPROVED" | "REJECTED" | "PENDING",
+    notes?: string
+  ): Promise<{ status: string; data: KYCSubmission }> => {
+    const response = await fetch(`${config.apiUrl}/kyc/${kycId}/status`, {
+      method: "PATCH",
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status, notes }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update KYC status");
+    }
+
+    return response.json();
+  },
+
+  downloadFile: async (
+    token: string,
+    fileId: string,
+    fileName: string
+  ): Promise<void> => {
+    try {
+      const response = await fetch(`${config.apiUrl}/files/${fileId}`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      if (!response.ok) throw new Error("Download failed");
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      throw new Error("Failed to download file");
+    }
   },
 };

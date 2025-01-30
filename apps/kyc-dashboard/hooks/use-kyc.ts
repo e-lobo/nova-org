@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { api } from "@/lib/api";
 import type { KYCSubmission } from "@/types/kyc";
 
@@ -7,31 +7,34 @@ export function useKYCSubmissions() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    const fetchSubmissions = async () => {
-      try {
-        const token = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("auth_token="))
-          ?.split("=")[1];
+  const fetchSubmissions = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("auth_token="))
+        ?.split("=")[1];
 
-        if (!token) {
-          throw new Error("No authentication token found");
-        }
-
-        const response = await api.getKYCSubmissions(token);
-        setSubmissions(response.data);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err : new Error("Failed to fetch submissions")
-        );
-      } finally {
-        setLoading(false);
+      if (!token) {
+        throw new Error("No authentication token found");
       }
-    };
 
-    fetchSubmissions();
+      const response = await api.getKYCSubmissions(token);
+      setSubmissions(response.data);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err : new Error("Failed to fetch submissions")
+      );
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchSubmissions();
+  }, [fetchSubmissions]);
+
   // Calculate statistics
   const stats = {
     pendingReviews: submissions.filter((s) => s.status === "PENDING").length,
@@ -64,6 +67,10 @@ export function useKYCSubmissions() {
         name: "Rejected",
         value: submissions.filter((s) => s.status === "REJECTED").length,
       },
+      {
+        name: "Returned",
+        value: submissions.filter((s) => s.status === "RETURNED").length,
+      },
     ],
     submissions: getWeeklySubmissionsData(submissions),
   };
@@ -74,6 +81,7 @@ export function useKYCSubmissions() {
     error,
     stats,
     chartData,
+    refetch: fetchSubmissions, // Expose the refetch function
   };
 }
 

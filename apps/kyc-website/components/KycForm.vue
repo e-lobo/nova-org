@@ -12,13 +12,21 @@
       <!-- Status Banner -->
       <div v-if="kycUser" class="mb-6">
         <div :class="statusAlertClass" role="alert">
-          <h3 class="font-bold dark:text-white">KYC Status: {{ kycUser.status }}</h3>
+          <h3 class="font-bold dark:text-white">
+            KYC Status: {{ kycUser.status }}
+          </h3>
           <div class="text-sm">
-            <p v-if="kycUser.status === 'APPROVED'" class="mt-2 dark:text-white">
+            <p
+              v-if="kycUser.status === 'APPROVED'"
+              class="mt-2 dark:text-white"
+            >
               Your KYC has been approved. You can view your submitted
               information below.
             </p>
-            <p v-else-if="kycUser.status === 'PENDING'" class="mt-2 dark:text-white">
+            <p
+              v-else-if="kycUser.status === 'PENDING'"
+              class="mt-2 dark:text-white"
+            >
               Your KYC is currently under review. You can view your submitted
               information below.
             </p>
@@ -26,6 +34,7 @@
               v-else-if="
                 kycUser.status === 'REJECTED' || kycUser.status === 'RETURNED'
               "
+              class="mt-2 dark:text-white"
             >
               Your KYC needs attention. Please review and resubmit.
               <span v-if="kycUser.notes" class="block mt-2">

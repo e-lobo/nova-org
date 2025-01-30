@@ -47,6 +47,7 @@ export const getFile = asyncHandler(async (req: Request, res: Response) => {
   const { fileStream, mimeType } = await fileService.getFile(
     req.params.fileId,
     req.user!.id,
+    req.user!.role,
   );
 
   // Set the appropriate headers

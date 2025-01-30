@@ -79,6 +79,7 @@ export class FileService {
   async getFile(
     fileId: string,
     userId: string,
+    role: string,
   ): Promise<{ fileStream: NodeJS.ReadableStream; mimeType: string }> {
     const file = await this.fileRepository.findById(fileId);
 
@@ -86,7 +87,7 @@ export class FileService {
       throw new AppError(404, 'File not found');
     }
 
-    if (file.userId !== userId) {
+    if (file.userId !== userId && role !== 'ADMIN') {
       throw new AppError(403, 'Not authorized to access this file');
     }
 

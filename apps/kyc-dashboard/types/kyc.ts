@@ -11,7 +11,7 @@ export interface KYCDocument {
 export interface KYCSubmission {
   id: string;
   userId: string;
-  status: "PENDING" | "APPROVED" | "REJECTED";
+  status: "PENDING" | "APPROVED" | "REJECTED" | "RETURNED";
   fullName: string;
   dateOfBirth: string;
   nationality: string;
