@@ -79,6 +79,14 @@
       <div v-if="canSubmit" class="mt-6 flex justify-between">
         <button
           v-if="currentStep === 3"
+          @click="previousStep"
+          class="btn btn-secondary"
+          :disabled="isSubmitting"
+        >
+          Back
+        </button>
+        <button
+          v-if="currentStep === 3"
           @click="handleSubmit"
           class="btn btn-primary ml-auto"
           :disabled="isSubmitting"
@@ -107,7 +115,7 @@ const {
   isReadOnly,
 } = storeToRefs(store);
 
-const { submitKyc, fetchKycStatus } = store;
+const { submitKyc, fetchKycStatus, previousStep } = store;
 
 const statusAlertClass = computed(() => {
   if (!kycUser.value?.status) return "";

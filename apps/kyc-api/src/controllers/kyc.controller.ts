@@ -75,7 +75,7 @@ export const getUserKYC = asyncHandler(async (req: Request, res: Response) => {
 export const getAllKYCs = asyncHandler(async (req: Request, res: Response) => {
   const kycs = await kycService.getAllKYCs({
     skip: Number(req.query.skip) || 0,
-    take: Number(req.query.take) || 10,
+    take: Number(req.query.take) || 100,
     status: req.query.status as string,
   });
 

@@ -59,7 +59,7 @@
         </h3>
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
           <!-- For existing KYC review -->
-          <template v-if="store.kycUser && store.kycUser.File">
+          <template v-if="!!Object.keys(store.kycUser?.File || {}).length">
             <div v-for="file in sortedFiles" :key="file.id" class="space-y-2">
               <p class="text-sm font-medium text-gray-500 dark:text-white">
                 {{ formatDocumentType(file.documentType) }}
