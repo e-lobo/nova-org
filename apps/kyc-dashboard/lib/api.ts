@@ -78,28 +78,7 @@ export const api = {
   updateKYCStatus: async (
     token: string,
     kycId: string,
-    status: "APPROVED" | "REJECTED" | "RETURNED",
-    notes?: string
-  ) => {
-    const response = await fetch(`${config.apiUrl}/kyc/${kycId}/status`, {
-      method: "PUT",
-      headers: {
-        Authorization: token,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ status, notes }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to update KYC status");
-    }
-
-    return response.json();
-  },
-  updateKYCStatus: async (
-    token: string,
-    kycId: string,
-    status: "APPROVED" | "REJECTED" | "PENDING",
+    status: "APPROVED" | "REJECTED" | "PENDING" | "RETURNED",
     notes?: string
   ): Promise<{ status: string; data: KYCSubmission }> => {
     const response = await fetch(`${config.apiUrl}/kyc/${kycId}/status`, {
