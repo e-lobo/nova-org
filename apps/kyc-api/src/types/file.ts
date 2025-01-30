@@ -1,3 +1,5 @@
+import { DocumentType } from '@prisma/client';
+
 export interface FileMetadata {
   id: string;
   originalName: string;
@@ -13,4 +15,6 @@ export interface FileUploadDTO {
   file: Express.Multer.File;
   userId: string;
   folder?: string;
+  documentType?: DocumentType;
+  kycId?: string;
 }

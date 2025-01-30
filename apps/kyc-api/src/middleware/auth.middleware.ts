@@ -39,3 +39,10 @@ export const protect = async (
     next(error);
   }
 };
+
+export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.user || req.user.role !== 'ADMIN') {
+    throw new AppError(403, 'Access denied. Admin only.');
+  }
+  next();
+};

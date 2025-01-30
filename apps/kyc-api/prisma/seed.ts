@@ -1,32 +1,25 @@
 import { PrismaClient } from '@prisma/client';
 import logger from '../src/utils/logger';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 async function main() {
   // Create admin user
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@example.com' },
-    update: {},
+    where: { email: 'admin@admin.com' },
+    update: {
+      password: await bcrypt.hash('admin', 12),
+    },
     create: {
-      email: 'admin@example.com',
+      email: 'admin@admin.com',
       name: 'Admin User',
-      password: '$2b$12$3',
+      password: await bcrypt.hash('admin', 12),
+      role: 'ADMIN',
     },
   });
 
-  // Create regular user
-  const user = await prisma.user.upsert({
-    where: { email: 'user@example.com' },
-    update: {},
-    create: {
-      email: 'user@example.com',
-      name: 'Test User',
-      password: '$2b$12$3',
-    },
-  });
-
-  logger.info('Seed data created:', { admin, user });
+  logger.info('Seed data created:', { admin });
 }
 
 main()

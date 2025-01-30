@@ -17,6 +17,9 @@ model User {
   updatedAt DateTime @updatedAt
   File      File[]
 
+  KYCReview KYC[] @relation("KYCReviews")
+  KYCUser   KYC?  @relation("KYCUser")
+
   @@map("users")
 }
 
@@ -32,10 +35,47 @@ model File {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  documentType DocumentType? // Optional as files can be non-KYC related
+  kyc          KYC?          @relation(fields: [kycId], references: [id])
+  kycId        String?
+
   @@map("files")
 }
 
 enum Role {
   ADMIN
   USER
+}
+
+enum KYCStatus {
+  PENDING
+  RETURNED
+  APPROVED
+  REJECTED
+}
+
+enum DocumentType {
+  PASSPORT
+  ADDRESS_PROOF
+  SELFIE
+}
+
+model KYC {
+  id          String    @id @default(cuid())
+  user        User      @relation("KYCUser", fields: [userId], references: [id])
+  userId      String    @unique // Ensures one KYC per user
+  status      KYCStatus @default(PENDING)
+  fullName    String?
+  dateOfBirth DateTime?
+  nationality String?
+  address     String?
+  phoneNumber String?
+  documents   File[] // One-to-many relationship with files
+  notes       String? // Admin notes for rejection/return
+  reviewedBy  User?     @relation("KYCReviews", fields: [reviewerId], references: [id])
+  reviewerId  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("kyc")
 }

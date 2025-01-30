@@ -1,5 +1,4 @@
 import path from 'path';
-import { env } from './env.config';
 
 export const storageConfig = {
   uploadDir: path.join(__dirname, '../../uploads'),

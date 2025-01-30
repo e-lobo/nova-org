@@ -27,6 +27,8 @@ export class FileService {
     file,
     userId,
     folder,
+    kycId,
+    documentType,
   }: FileUploadDTO): Promise<FileMetadata> {
     // Validate file size
     if (file.size > storageConfig.maxFileSize) {
@@ -48,6 +50,8 @@ export class FileService {
       size: file.size,
       path,
       folder: folder || 'default',
+      documentType,
+      kyc: kycId ? { connect: { id: kycId } } : undefined,
       uploadedBy: { connect: { id: userId } },
     });
 
