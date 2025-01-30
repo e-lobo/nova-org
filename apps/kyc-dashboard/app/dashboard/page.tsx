@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { format } from "date-fns";
+import { format, sub } from "date-fns";
 import {
   Clock,
   Users,
@@ -52,12 +52,9 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import {
-  mockSubmissions,
-  getStats,
-  getChartData,
-  type KYCSubmission,
-} from "@/lib/mock-data";
+
+import { useKYCSubmissions } from "@/hooks/use-kyc";
+import { KYCSubmission } from "@/types/kyc";
 
 const COLORS = ["#ff9800", "#4caf50", "#f44336"];
 
@@ -86,11 +83,11 @@ function ReviewDialog({
   ];
 
   const personalInfo = {
-    fullName: submission.name,
-    dateOfBirth: "1990-05-15",
-    nationality: "United States",
-    address: "123 Main St, New York, NY 10001",
-    phone: "+1 (555) 123-4567",
+    fullName: submission.fullName,
+    dateOfBirth: format(new Date(submission.dateOfBirth), "PPP"),
+    nationality: submission.nationality,
+    address: submission.address,
+    phone: submission.phoneNumber,
   };
 
   return (
@@ -100,7 +97,7 @@ function ReviewDialog({
           <DialogTitle>Review KYC Submission</DialogTitle>
           <DialogDescription>
             Submission ID: {submission.id} | Submitted on{" "}
-            {format(new Date(submission.submittedAt), "PPP")}
+            {format(new Date(submission.createdAt), "PPP")}
           </DialogDescription>
         </DialogHeader>
 
@@ -191,28 +188,30 @@ export default function DashboardPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedSubmission, setSelectedSubmission] =
     useState<KYCSubmission | null>(null);
-  const stats = getStats();
-  const chartData = getChartData();
 
-  const filteredSubmissions = mockSubmissions
+  const { submissions, loading, error, stats, chartData } = useKYCSubmissions();
+
+  // Filter submissions
+  const filteredSubmissions = submissions
     .filter(
       (submission) =>
         (statusFilter === "all" || submission.status === statusFilter) &&
-        (submission.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          submission.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (submission.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          submission.user.email
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
           submission.id.toLowerCase().includes(searchTerm.toLowerCase()))
     )
     .sort(
       (a, b) =>
-        new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
-    )
-    .slice(0, 10);
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
 
   const getStatusColor = (status: KYCSubmission["status"]) => {
     switch (status) {
-      case "approved":
+      case "APPROVED":
         return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
-      case "rejected":
+      case "REJECTED":
         return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
       default:
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
@@ -270,9 +269,9 @@ export default function DashboardPage() {
             <div className="text-2xl font-bold">
               {stats.weeklyApprovalRate}%
             </div>
-            <p className="text-xs text-muted-foreground">
+            {/* <p className="text-xs text-muted-foreground">
               +2.1% from last week
-            </p>
+            </p> */}
           </CardContent>
         </Card>
         <Card>
@@ -283,10 +282,10 @@ export default function DashboardPage() {
             <Clock className="h-4 w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.avgProcessingTime}h</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-2xl font-bold">{stats.avgProcessingTime}</div>
+            {/* <p className="text-xs text-muted-foreground">
               -1.2h from last week
-            </p>
+            </p> */}
           </CardContent>
         </Card>
       </div>
@@ -383,19 +382,19 @@ export default function DashboardPage() {
                   <TableCell className="font-medium">{submission.id}</TableCell>
                   <TableCell>
                     <div>
-                      <div className="font-medium">{submission.name}</div>
+                      <div className="font-medium">{submission.fullName}</div>
                       <div className="text-sm text-muted-foreground">
-                        {submission.email}
+                        {submission.nationality}
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge className={getStatusColor(submission.status)}>
+                    <Badge className={getStatusColor(submission.status as any)}>
                       {submission.status}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {format(new Date(submission.submittedAt), "MMM d, yyyy")}
+                    {format(new Date(submission.createdAt), "MMM d, yyyy")}
                   </TableCell>
                   <TableCell>
                     <Button

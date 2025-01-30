@@ -1,4 +1,5 @@
 import { config } from "@/config/env";
+import { KYCSubmission } from "@/types/kyc";
 
 export const API_ROUTES = {
   LOGIN: `${config.apiUrl}/auth/login`,
@@ -54,6 +55,43 @@ export const api = {
 
     if (!response.ok) {
       throw new Error("Failed to get user data");
+    }
+
+    return response.json();
+  },
+  getKYCSubmissions: async (
+    token: string
+  ): Promise<{ data: KYCSubmission[] }> => {
+    const response = await fetch(`${config.apiUrl}/kyc`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch KYC submissions");
+    }
+
+    return response.json();
+  },
+
+  updateKYCStatus: async (
+    token: string,
+    kycId: string,
+    status: "APPROVED" | "REJECTED",
+    notes?: string
+  ) => {
+    const response = await fetch(`${config.apiUrl}/kyc/${kycId}/status`, {
+      method: "PUT",
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status, notes }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update KYC status");
     }
 
     return response.json();
