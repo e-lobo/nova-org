@@ -2,6 +2,16 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: false },
+  devServer: {
+    port: parseInt(process.env.NUXT_PORT || "3000"),
+    host: process.env.NUXT_HOST || "localhost",
+  },
+  runtimeConfig: {
+    apiBaseUrl: process.env.NUXT_API_BASE_URL,
+    public: {
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL,
+    },
+  },
   modules: [
     "@nuxtjs/tailwindcss",
     "@pinia/nuxt",

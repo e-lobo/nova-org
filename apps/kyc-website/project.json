@@ -6,10 +6,15 @@
   "targets": {
     "serve": {
       "executor": "nx:run-commands",
-      "options": {
-        "command": "cd apps/kyc-website && npm run dev",
-        "cwd": "."
-      }
+      "configurations": {
+        "development": {
+          "command": "cd apps/kyc-website && npm run dev"
+        },
+        "production": {
+          "command": "cd apps/kyc-website && npm run start"
+        }
+      },
+      "defaultConfiguration": "development"
     },
     "build": {
       "executor": "nx:run-commands",

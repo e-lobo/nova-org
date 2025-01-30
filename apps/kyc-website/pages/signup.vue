@@ -26,6 +26,23 @@
         <form class="space-y-6" @submit.prevent="handleSignup">
           <div>
             <label
+              for="name"
+              class="block text-sm font-medium text-gray-700 dark:text-white"
+            >
+              Name
+            </label>
+            <div class="mt-1">
+              <input
+                id="name"
+                v-model="name"
+                type="text"
+                required
+                class="form-input"
+              />
+            </div>
+          </div>
+          <div>
+            <label
               for="email"
               class="block text-sm font-medium text-gray-700 dark:text-white"
             >
@@ -86,6 +103,7 @@ const router = useRouter();
 const authStore = useAuthStore();
 
 const email = ref("");
+const name = ref("");
 const password = ref("");
 const error = ref("");
 const isLoading = ref(false);
@@ -94,7 +112,7 @@ const handleSignup = async () => {
   try {
     isLoading.value = true;
     error.value = "";
-    await authStore.signup(email.value, password.value);
+    await authStore.signup(email.value, password.value, name.value);
     router.push("/");
   } catch (err: any) {
     error.value = err.message || "Failed to create account";
