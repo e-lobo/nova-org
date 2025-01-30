@@ -8,13 +8,17 @@
       <div>
         <label
           class="block text-sm font-medium text-gray-700 mb-1 dark:text-white"
-          >{{ $t("kyc.personalInfo.fullName") }}</label
         >
+          {{ $t("kyc.personalInfo.fullName") }}
+          <span class="text-red-500">*</span>
+        </label>
         <input
           v-model="form.fullName"
           type="text"
           class="form-input"
           :class="{ 'border-red-500': errors.fullName }"
+          :disabled="isReadOnly"
+          required
         />
         <p v-if="errors.fullName" class="mt-1 text-sm text-red-600">
           {{ errors.fullName }}
@@ -24,13 +28,17 @@
       <div>
         <label
           class="block text-sm font-medium text-gray-700 mb-1 dark:text-white"
-          >{{ $t("kyc.personalInfo.dateOfBirth") }}</label
         >
+          {{ $t("kyc.personalInfo.dateOfBirth") }}
+          <span class="text-red-500">*</span>
+        </label>
         <input
           v-model="form.dateOfBirth"
           type="date"
           class="form-input"
           :class="{ 'border-red-500': errors.dateOfBirth }"
+          :disabled="isReadOnly"
+          required
         />
         <p v-if="errors.dateOfBirth" class="mt-1 text-sm text-red-600">
           {{ errors.dateOfBirth }}
@@ -40,13 +48,17 @@
       <div>
         <label
           class="block text-sm font-medium text-gray-700 mb-1 dark:text-white"
-          >{{ $t("kyc.personalInfo.address") }}</label
         >
+          {{ $t("kyc.personalInfo.address") }}
+          <span class="text-red-500">*</span>
+        </label>
         <textarea
           v-model="form.address"
           class="form-input"
           :class="{ 'border-red-500': errors.address }"
           rows="3"
+          :disabled="isReadOnly"
+          required
         ></textarea>
         <p v-if="errors.address" class="mt-1 text-sm text-red-600">
           {{ errors.address }}
@@ -56,13 +68,17 @@
       <div>
         <label
           class="block text-sm font-medium text-gray-700 mb-1 dark:text-white"
-          >{{ $t("kyc.personalInfo.phone") }}</label
         >
+          {{ $t("kyc.personalInfo.phone") }}
+          <span class="text-red-500">*</span>
+        </label>
         <input
           v-model="form.phone"
           type="tel"
           class="form-input"
           :class="{ 'border-red-500': errors.phone }"
+          :disabled="isReadOnly"
+          required
         />
         <p v-if="errors.phone" class="mt-1 text-sm text-red-600">
           {{ errors.phone }}
@@ -72,31 +88,42 @@
       <div>
         <label
           class="block text-sm font-medium text-gray-700 mb-1 dark:text-white"
-          >{{ $t("kyc.personalInfo.email") }}</label
         >
+          {{ $t("kyc.personalInfo.nationality") }}
+          <span class="text-red-500">*</span>
+        </label>
         <input
-          v-model="form.email"
-          type="email"
+          v-model="form.nationality"
+          type="text"
           class="form-input"
-          :class="{ 'border-red-500': errors.email }"
+          :class="{ 'border-red-500': errors.nationality }"
+          :disabled="isReadOnly"
+          required
         />
-        <p v-if="errors.email" class="mt-1 text-sm text-red-600">
-          {{ errors.email }}
+        <p v-if="errors.nationality" class="mt-1 text-sm text-red-600">
+          {{ errors.nationality }}
         </p>
       </div>
+    </div>
+
+    <div v-if="!isReadOnly" class="flex justify-end">
+      <button type="submit" class="btn btn-primary">Next</button>
     </div>
   </form>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { storeToRefs } from "pinia";
 import {
   useKycStore,
   personalInfoSchema,
   type PersonalInfo,
 } from "~/stores/kyc";
+import { useToast } from "vue-toastification";
 
 const store = useKycStore();
+const { isReadOnly } = storeToRefs(store);
 const errors = ref<Partial<Record<keyof PersonalInfo, string>>>({});
 
 const form = ref<PersonalInfo>({
@@ -104,7 +131,7 @@ const form = ref<PersonalInfo>({
   dateOfBirth: store.$state.personalInfo.dateOfBirth,
   address: store.$state.personalInfo.address,
   phone: store.$state.personalInfo.phone,
-  email: store.$state.personalInfo.email,
+  nationality: store.$state.personalInfo.nationality,
 });
 
 const handleSubmit = () => {
@@ -120,11 +147,21 @@ const handleSubmit = () => {
         return acc;
       }, {});
     }
+    // Show validation toast
+    useToast().error("Please fill in all required fields correctly");
   }
 };
 
 // Update store when component unmounts
 onBeforeUnmount(() => {
   store.setPersonalInfo(form.value);
+});
+
+// Initialize form with store data
+onMounted(() => {
+  const storeData = store.$state.personalInfo;
+  if (storeData) {
+    form.value = { ...storeData };
+  }
 });
 </script>

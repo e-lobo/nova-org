@@ -9,6 +9,10 @@ export class UserRepository {
   async findById(id: string): Promise<User | null> {
     return prisma.user.findUnique({
       where: { id },
+      include: {
+        KYCUser: true,
+        File: true,
+      },
     });
   }
 

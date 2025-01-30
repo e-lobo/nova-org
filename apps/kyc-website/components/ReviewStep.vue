@@ -14,7 +14,7 @@
             <dt class="text-sm font-medium text-gray-500 dark:text-white">
               Full Name
             </dt>
-            <dd class="mt-1 text-sm text-gray-900">
+            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
               {{ store.personalInfo.fullName }}
             </dd>
           </div>
@@ -22,7 +22,7 @@
             <dt class="text-sm font-medium text-gray-500 dark:text-white">
               Date of Birth
             </dt>
-            <dd class="mt-1 text-sm text-gray-900">
+            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
               {{ formatDate(store.personalInfo.dateOfBirth) }}
             </dd>
           </div>
@@ -30,7 +30,7 @@
             <dt class="text-sm font-medium text-gray-500 dark:text-white">
               Address
             </dt>
-            <dd class="mt-1 text-sm text-gray-900">
+            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
               {{ store.personalInfo.address }}
             </dd>
           </div>
@@ -38,34 +38,34 @@
             <dt class="text-sm font-medium text-gray-500 dark:text-white">
               Phone
             </dt>
-            <dd class="mt-1 text-sm text-gray-900">
+            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
               {{ store.personalInfo.phone }}
             </dd>
           </div>
           <div>
             <dt class="text-sm font-medium text-gray-500 dark:text-white">
-              Email
+              Nationality
             </dt>
-            <dd class="mt-1 text-sm text-gray-900">
-              {{ store.personalInfo.email }}
+            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+              {{ store.personalInfo.nationality }}
             </dd>
           </div>
         </dl>
       </div>
 
       <div class="border rounded-lg p-6">
-        <h3 class="text-lg font-medium mb-4">Uploaded Documents</h3>
+        <h3 class="text-lg font-medium mb-4 dark:text-white">Uploaded Documents</h3>
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
           <div
             v-for="(doc, type) in store.documents"
             :key="type"
             class="space-y-2"
           >
-            <p class="text-sm font-medium text-gray-500">
+            <p class="text-sm font-medium text-gray-500 dark:text-white">
               {{ formatDocumentType(type) }}
             </p>
             <div class="border rounded p-2">
-              <div v-if="doc" class="text-sm text-gray-900">
+              <div v-if="doc" class="text-sm text-gray-900 dark:text-white">
                 <p>{{ doc.name }}</p>
                 <p class="text-gray-500">{{ formatFileSize(doc.size) }}</p>
               </div>

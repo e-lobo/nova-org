@@ -28,7 +28,7 @@
       "dateOfBirth": "Date of Birth",
       "address": "Current Address",
       "phone": "Phone Number",
-      "email": "Email"
+      "nationality": "Nationality"
     },
     "documents": {
       "idDocument": "ID Document",

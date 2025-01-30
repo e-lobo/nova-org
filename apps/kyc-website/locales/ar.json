@@ -28,7 +28,7 @@
       "dateOfBirth": "تاريخ الميلاد",
       "address": "العنوان الحالي",
       "phone": "رقم الهاتف",
-      "email": "البريد الإلكتروني"
+      "nationality": "البريد الإلكتروني"
     },
     "documents": {
       "idDocument": "وثيقة الهوية",

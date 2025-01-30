@@ -44,20 +44,10 @@
 import { useAuthStore } from "~/stores/auth";
 import { useRouter } from "nuxt/app";
 
-const router = useRouter();
 const authStore = useAuthStore();
 
 // Initialize auth state
 onMounted(() => {
   authStore.initialize();
 });
-
-const handleLogout = async () => {
-  try {
-    await authStore.logout();
-    router.push("/login");
-  } catch (error) {
-    console.error("Error logging out:", error);
-  }
-};
 </script>
