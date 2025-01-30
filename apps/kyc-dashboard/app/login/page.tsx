@@ -1,49 +1,72 @@
-"use client"
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Shield } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { useToast } from "@/hooks/use-toast"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { isAllowedRole, saveAuthToken } from "@/lib/auth";
+import { api } from "@/lib/api";
 
 export default function LoginPage() {
-  const router = useRouter()
-  const { toast } = useToast()
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    remember: false
-  })
+    email: "",
+    password: "",
+    remember: false,
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    try {
+      const response = await api.login(formData.email, formData.password);
 
-    if (formData.email === 'admin@example.com' && formData.password === 'admin') {
-      document.cookie = 'auth=true; path=/'
-      if (formData.remember) {
-        localStorage.setItem('email', formData.email)
+      if (response.status === "success") {
+        const { user, token } = response.data;
+
+        if (!isAllowedRole(user.role)) {
+          toast({
+            variant: "destructive",
+            title: "Access Denied",
+            description: "You don't have permission to access this dashboard.",
+          });
+          return;
+        }
+
+        // Set the auth_token cookie
+        document.cookie = `auth_token=${token}; path=/; samesite=strict;`;
+
+        if (formData.remember) {
+          localStorage.setItem("email", formData.email);
+        }
+
+        router.push("/dashboard");
       }
-      router.push('/dashboard')
-    } else {
+    } catch (error) {
       toast({
         variant: "destructive",
         title: "Authentication failed",
         description: "Invalid email or password. Please try again.",
-      })
+      });
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false)
-  }
-
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
@@ -51,7 +74,9 @@ export default function LoginPage() {
           <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mb-4">
             <Shield className="w-6 h-6 text-primary-foreground" />
           </div>
-          <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">
+            Welcome Back
+          </CardTitle>
           <CardDescription className="text-center">
             Enter your credentials to access the KYC dashboard
           </CardDescription>
@@ -66,7 +91,9 @@ export default function LoginPage() {
                 placeholder="admin@example.com"
                 required
                 value={formData.email}
-                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, email: e.target.value }))
+                }
               />
             </div>
             <div className="space-y-2">
@@ -76,15 +103,20 @@ export default function LoginPage() {
                 type="password"
                 required
                 value={formData.password}
-                onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, password: e.target.value }))
+                }
               />
             </div>
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="remember"
                 checked={formData.remember}
-                onCheckedChange={(checked) => 
-                  setFormData(prev => ({ ...prev, remember: checked === true }))
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    remember: checked === true,
+                  }))
                 }
               />
               <label
@@ -103,5 +135,5 @@ export default function LoginPage() {
         </form>
       </Card>
     </div>
-  )
+  );
 }

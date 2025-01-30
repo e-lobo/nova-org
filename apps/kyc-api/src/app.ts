@@ -30,7 +30,7 @@ export const createApp = (): Express => {
   app.use(helmet());
   app.use(
     cors({
-      origin: env.CORS_ORIGIN,
+      origin: (env.CORS_ORIGIN || '*').split(','),
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
       allowedHeaders: ['Content-Type', 'Authorization'],
     }),

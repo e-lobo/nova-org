@@ -7,8 +7,13 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cd apps/kyc-dashboard && npm run dev",
+        "command": "cd apps/kyc-dashboard && PORT=${PORT:-3001} npm run dev",
         "cwd": "."
+      },
+      "configurations": {
+        "production": {
+          "command": "cd apps/kyc-dashboard && PORT=${PORT:-3001} NODE_ENV=production npm run start"
+        }
       }
     },
     "build": {

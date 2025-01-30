@@ -6,7 +6,7 @@ export const envSchema = z.object({
   API_URL: z.string().url(),
   DATABASE_URL: z.string().url(),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']),
-  CORS_ORIGIN: z.string().url().optional(),
+  CORS_ORIGIN: z.string(),
   RATE_LIMIT_MAX_REQUESTS: z.string().transform((val) => parseInt(val, 10)),
   JWT_SECRET: z.string(),
 });
