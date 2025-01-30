@@ -23,6 +23,20 @@ export type Documents = z.infer<typeof documentsSchema>;
 
 export type KycStatus = "PENDING" | "APPROVED" | "REJECTED" | "RETURNED" | null;
 
+interface KycFile {
+  id: string;
+  originalName: string;
+  mimeType: string;
+  size: number;
+  path: string;
+  folder: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+  documentType: "PASSPORT" | "ADDRESS_PROOF" | "SELFIE";
+  kycId: string;
+}
+
 interface KycUser {
   id: string;
   status: KycStatus;
@@ -34,6 +48,17 @@ interface KycUser {
   notes?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+interface UserResponse {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+  KYCUser: KycUser | null;
+  File: KycFile[];
 }
 
 export const useKycStore = defineStore("kyc", {
@@ -52,7 +77,7 @@ export const useKycStore = defineStore("kyc", {
       selfie: null,
     } as unknown as Documents,
     isSubmitting: false,
-    kycUser: null as KycUser | null,
+    kycUser: null as (KycUser & { File: KycFile[] }) | null,
     error: null as string | null,
     isLoading: false,
   }),
@@ -90,10 +115,16 @@ export const useKycStore = defineStore("kyc", {
         if (!response.ok) throw new Error("Failed to fetch KYC status");
 
         const data = await response.json();
-        this.kycUser = data.data.KYCUser;
+        const userData: UserResponse = data.data;
 
-        // Pre-fill form if KYC exists
-        if (this.kycUser) {
+        if (userData.KYCUser) {
+          // Combine KYC user data with files
+          this.kycUser = {
+            ...userData.KYCUser,
+            File: userData.File || [],
+          };
+
+          // Pre-fill form
           this.personalInfo = {
             fullName: this.kycUser.fullName,
             dateOfBirth: new Date(this.kycUser.dateOfBirth)
@@ -103,6 +134,8 @@ export const useKycStore = defineStore("kyc", {
             phone: this.kycUser.phoneNumber,
             nationality: this.kycUser.nationality,
           };
+        } else {
+          this.kycUser = null;
         }
       } catch (error: any) {
         this.error = error.message;

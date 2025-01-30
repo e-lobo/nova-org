@@ -54,24 +54,46 @@
       </div>
 
       <div class="border rounded-lg p-6">
-        <h3 class="text-lg font-medium mb-4 dark:text-white">Uploaded Documents</h3>
+        <h3 class="text-lg font-medium mb-4 dark:text-white">
+          Uploaded Documents
+        </h3>
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
-          <div
-            v-for="(doc, type) in store.documents"
-            :key="type"
-            class="space-y-2"
-          >
-            <p class="text-sm font-medium text-gray-500 dark:text-white">
-              {{ formatDocumentType(type) }}
-            </p>
-            <div class="border rounded p-2">
-              <div v-if="doc" class="text-sm text-gray-900 dark:text-white">
-                <p>{{ doc.name }}</p>
-                <p class="text-gray-500">{{ formatFileSize(doc.size) }}</p>
+          <!-- For existing KYC review -->
+          <template v-if="store.kycUser && store.kycUser.File">
+            <div v-for="file in sortedFiles" :key="file.id" class="space-y-2">
+              <p class="text-sm font-medium text-gray-500 dark:text-white">
+                {{ formatDocumentType(file.documentType) }}
+              </p>
+              <div class="border rounded p-2">
+                <div class="text-sm text-gray-900 dark:text-white">
+                  <p>{{ file.originalName }}</p>
+                  <p class="text-gray-500">{{ formatFileSize(file.size) }}</p>
+                  <p class="text-gray-500 text-xs">{{ file.mimeType }}</p>
+                  <!-- Add download/view button if needed -->
+                </div>
               </div>
-              <p v-else class="text-sm text-red-600">Not uploaded</p>
             </div>
-          </div>
+          </template>
+
+          <!-- For new KYC submission -->
+          <template v-else>
+            <div
+              v-for="(doc, type) in store.documents"
+              :key="type"
+              class="space-y-2"
+            >
+              <p class="text-sm font-medium text-gray-500 dark:text-white">
+                {{ formatDocumentType(type) }}
+              </p>
+              <div class="border rounded p-2">
+                <div v-if="doc" class="text-sm text-gray-900 dark:text-white">
+                  <p>{{ doc.name }}</p>
+                  <p class="text-gray-500">{{ formatFileSize(doc.size) }}</p>
+                </div>
+                <p v-else class="text-sm text-red-600">Not uploaded</p>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -80,8 +102,19 @@
 
 <script setup lang="ts">
 import { useKycStore } from "~/stores/kyc";
+import { computed } from "vue";
 
 const store = useKycStore();
+
+// Sort files by document type to maintain consistent order
+const sortedFiles = computed(() => {
+  if (!store.kycUser?.File) return [];
+
+  return [...store.kycUser.File].sort((a, b) => {
+    const order = ["PASSPORT", "ADDRESS_PROOF", "SELFIE"];
+    return order.indexOf(a.documentType) - order.indexOf(b.documentType);
+  });
+});
 
 const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString();
@@ -90,7 +123,8 @@ const formatDate = (date: string) => {
 const formatDocumentType = (type: string) => {
   return type
     .replace(/([A-Z])/g, " $1")
-    .replace(/^./, (str) => str.toUpperCase());
+    .replace(/^./, (str) => str.toUpperCase())
+    .replace(/_/g, " ");
 };
 
 const formatFileSize = (bytes: number) => {
